@@ -2,7 +2,7 @@
 
 DEST="/sdcard/Music/"
 ADBPATH="/Users/Thomas/Dropbox/ADB/"
-BGCPMAX=10
+BGCPMAX=1
 
 function getTrackIdList {
 	PLAYLISTNAME=$1
@@ -29,14 +29,22 @@ function getTrackLocation {
 TRACKLIST=`getTrackIdList "$1"`
 SINGLE=`echo $TRACKLIST | awk '{ print $3 }'`
 
-#TRACKARR=()
 
 for SINGLE in $TRACKLIST
 do
-	#TRACKARR+=`getTrackLocation $SINGLE`
 	FILE=`getTrackLocation $SINGLE`
-	echo $FILE
-	"$ADBPATH"adb push "$FILE" $DEST
+	BGCPCOUNT=`ps -ef | grep 'adb push' | grep -v grep | wc -l`
+
+	echo ''
+	echo $FILE | awk -F'/' '{ print $NF }'
+	if [ $BGCPCOUNT -lt $BGCPMAX ]
+	then
+		echo "in bg"
+		"$ADBPATH"adb push "$FILE" $DEST $OP 2> /dev/null &
+	else
+		echo "in fg"
+		"$ADBPATH"adb push "$FILE" $DEST $OP 2> /dev/null
+	fi
 done
 
 echo "$TRACKARR"
