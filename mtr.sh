@@ -6,8 +6,6 @@ BGCPMAX=1
 PLAYLISTNAME=$1
 DEST="/sdcard/Music/$PLAYLISTNAME"
 
-read -t 10 -p "Hit ENTER or wait ten seconds"
-
 function getTrackIdList {
 	TRACKLISTSEDSTRING="/<key>Name<\/key><string>$PLAYLISTNAME/,/<\/array>/p"
 	cat "$LIBPATH" | sed -n $TRACKLISTSEDSTRING | grep '<key>Track ID</key>' | awk -F">|<" '{print $7}' | sort -n | uniq
@@ -31,13 +29,9 @@ function getTrackLocation {
 
 TRACKLIST=`getTrackIdList`
 
-read -t 10 -p "Hit ENTER or wait ten seconds"
-
 SINGLE=`echo $TRACKLIST | awk '{ print $3 }'`
 
 "$ADBPATH"adb shell mkdir $DEST
-
-read -t 10 -p "Hit ENTER or wait ten seconds"
 
 for SINGLE in $TRACKLIST
 do
