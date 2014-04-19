@@ -24,7 +24,7 @@ function getTrackLocation {
 	TRACKID=$1
 	TRACKIDSEDSTRING="/<\/key><integer>$TRACKID<\/integer>/,/<\/dict>/p"
 
-	urldecode `cat "$LIBPATH" | sed -n $TRACKIDSEDSTRING | grep '<key>Location</key><string>' | awk -F">|<" '{print $7}' | sed 's|file:\/\/localhost||g' | sed 's|\&#38;|\&|g'`
+	urldecode `cat "$LIBPATH" | sed -n $TRACKIDSEDSTRING | grep '<key>Location</key><string>' | awk -F">|<" '{print $7}' | sed 's|file:\/\/localhost||g' | sed 's|\&#38;|\&|g'  | sed 's|+|%2B|'`
 }
 
 TRACKLIST=`getTrackIdList`
