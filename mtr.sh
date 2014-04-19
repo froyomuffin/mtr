@@ -1,13 +1,16 @@
 #!/bin/bash
 
-DEST="/sdcard/Music/"
 ADBPATH="/Users/Thomas/Dropbox/ADB/"
+LIBPATH="/Users/Thomas/Music/iTunes/iTunes Music Library.xml"
 BGCPMAX=1
+PLAYLISTNAME=$1
+DEST="/sdcard/Music/$PLAYLISTNAME"
+
+read -t 10 -p "Hit ENTER or wait ten seconds"
 
 function getTrackIdList {
-	PLAYLISTNAME=$1
 	TRACKLISTSEDSTRING="/<key>Name<\/key><string>$PLAYLISTNAME/,/<\/array>/p"
-	cat lib.xml | sed -n $TRACKLISTSEDSTRING | grep '<key>Track ID</key>' | awk -F">|<" '{print $7}' | sort -n | uniq
+	cat "$LIBPATH" | sed -n $TRACKLISTSEDSTRING | grep '<key>Track ID</key>' | awk -F">|<" '{print $7}' | sort -n | uniq
 }
 
 function urldecode {
@@ -23,12 +26,18 @@ function getTrackLocation {
 	TRACKID=$1
 	TRACKIDSEDSTRING="/<\/key><integer>$TRACKID<\/integer>/,/<\/dict>/p"
 
-	urldecode `cat lib.xml | sed -n $TRACKIDSEDSTRING | grep '<key>Location</key><string>' | awk -F">|<" '{print $7}' | sed 's|file:\/\/localhost||g' | sed 's|\&#38;|\&|g'`
+	urldecode `cat "$LIBPATH" | sed -n $TRACKIDSEDSTRING | grep '<key>Location</key><string>' | awk -F">|<" '{print $7}' | sed 's|file:\/\/localhost||g' | sed 's|\&#38;|\&|g'`
 }
 
-TRACKLIST=`getTrackIdList "$1"`
+TRACKLIST=`getTrackIdList`
+
+read -t 10 -p "Hit ENTER or wait ten seconds"
+
 SINGLE=`echo $TRACKLIST | awk '{ print $3 }'`
 
+"$ADBPATH"adb shell mkdir $DEST
+
+read -t 10 -p "Hit ENTER or wait ten seconds"
 
 for SINGLE in $TRACKLIST
 do
