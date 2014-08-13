@@ -31,7 +31,7 @@ TRACKLIST=`getTrackIdList`
 
 SINGLE=`echo $TRACKLIST | awk '{ print $3 }'`
 
-"$ADBPATH"adb shell mkdir $DEST
+"$ADBPATH"adb shell mkdir -p $DEST
 
 for SINGLE in $TRACKLIST
 do
